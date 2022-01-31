@@ -356,15 +356,6 @@ server <- function(input,output,session){
       mutate(across(everything(), function(x) round(x,2)))
   )
 
-
-
-
-
-
-
-
-
-
   # Download model results
   output$download_xg_results <- downloadHandler(
     filename = function(){
