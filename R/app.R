@@ -62,7 +62,7 @@ executeApp <- function(){
   options(scipen = 999,
           digits = 2)
 
-  parallel_start(4, .method = "parallel")
+  modeltime::parallel_start(4, .method = "parallel")
 
   #source('ui.R', local = TRUE)
   #source('server.R')
