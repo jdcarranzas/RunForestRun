@@ -7,12 +7,12 @@
 #    http://shiny.rstudio.com/
 #
 
-packages_for_install <- c("skimr", 
-                          "tidyverse", 
-                          "modeltime", 
-                          "tidymodels", 
-                          "workflowsets", 
-                          "timetk", 
+packages_for_install <- c("skimr",
+                          "tidyverse",
+                          "modeltime",
+                          "tidymodels",
+                          "workflowsets",
+                          "timetk",
                           "xgboost",
                           "randomForest",
                           "caret",
@@ -23,7 +23,7 @@ packages_for_install <- c("skimr",
                           "openxlsx",
                           "writexl")
 
-install.packages(setdiff(packages_for_install, 
+install.packages(setdiff(packages_for_install,
                          rownames(installed.packages())))
 
 
@@ -47,11 +47,11 @@ require(shiny)
 executeApp <- function(){
   options(scipen = 999,
           digits = 2)
-  
-  source('ui.R', local = TRUE)
-  source('server.R')
-  
-  # Run the application 
+
+  #source('ui.R', local = TRUE)
+  #source('server.R')
+
+  # Run the application
   shinyApp(ui = ui, server = server)
 }
 
