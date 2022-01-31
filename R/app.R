@@ -58,6 +58,7 @@ executeApp <- function(){
   library(openxlsx)
   library(writexl)
   require(shiny)
+  require(randomForest)
 
   options(scipen = 999,
           digits = 2)
