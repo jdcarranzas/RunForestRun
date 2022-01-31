@@ -18,7 +18,7 @@ require(shiny)
 #source("rf_model_functions.R")
 #source("xg_model_functions.R")
 
-setwd("RunForestRun/R")
+#setwd("RunForestRun/R")
 
 server <- function(input,output,session){
   parallel_start(4, .method = "parallel")
