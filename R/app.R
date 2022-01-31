@@ -24,7 +24,8 @@ packages_for_install <- c("skimr",
                           "writexl")
 
 install.packages(setdiff(packages_for_install,
-                         rownames(installed.packages())))
+                         rownames(installed.packages())),
+                 repos = "http://cran.us.r-project.org")
 
 
 library(skimr)
