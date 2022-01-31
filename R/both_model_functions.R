@@ -14,15 +14,14 @@ library(openxlsx)
 library(writexl)
 
 
-
 # 1. Create model functions -----------------------------------------------
 
-split <- function(dataset, threshold){ 
-  # This function splits the dataset, this assumes the dataset is in chronological order. 
+split <- function(dataset, threshold){
+  # This function splits the dataset, this assumes the dataset is in chronological order.
   # Receives a dataset and a threshold
   # Devolves a split_tidymodels object, to access the training just use training(model_split)
-  model_split <- time_series_split(dataset, 
-                                   initial = floor(nrow(dataset)*threshold), 
+  model_split <- time_series_split(dataset,
+                                   initial = floor(nrow(dataset)*threshold),
                                    assess = nrow(dataset)-floor(nrow(dataset)*threshold))
   return(model_split)
 }
@@ -45,7 +44,7 @@ set_recipe <- function(formula, split_object, threshold, drop){
     step_nzv(all_predictors()) %>% # Deletes near zero variance predictors
     step_corr(all_numeric(),-all_outcomes(), threshold = threshold) %>% # Drops highly correlated variables
     step_select(all_numeric(), -contains("_val|_vol"))  # selects only numeric variables minus _Vol, _val
-  
+
   return(model_recipe)
 }
 
@@ -66,10 +65,10 @@ set_model_wfset <- function(model_recipe, model){
 
 set_model_parallel_tbl <- function(dataset, model_wfset, split_object){
   # This functions generates the list of models
-  # dataset - uses the original dataset 
+  # dataset - uses the original dataset
   # model_wfset - uses the output from set_model_wfset
-  # split_object - uses the split object created 
-  
+  # split_object - uses the split object created
+
   model_parallel_tbl <- model_wfset %>%
     modeltime_fit_workflowset(
       data    = training(split_object),
@@ -88,8 +87,8 @@ set_model_parallel_tbl <- function(dataset, model_wfset, split_object){
 get_best_model <- function(model_parallel_tbl){
   # This function returns the ID of the best model
   # model_parallel_tbl - uses the table of models
-  model_best_id <- as.numeric(model_parallel_tbl %>% 
-                                modeltime_accuracy() %>% arrange(desc(rsq)) %>% 
+  model_best_id <- as.numeric(model_parallel_tbl %>%
+                                modeltime_accuracy() %>% arrange(desc(rsq)) %>%
                                 dplyr::slice(1) %>% select(.model_id))
   return(model_best_id)
 }
@@ -97,12 +96,12 @@ get_best_model <- function(model_parallel_tbl){
 get_base_model <- function(model_best_id, model_parallel_tbl){
   # This function returns the model object to be used in posterior analysis
   # model_best_id - the id of the best model obtained
-  # model_parallel_tbl - uses the table of models 
-  model_base <- model_parallel_tbl %>% filter(.model_id == model_best_id) %>% 
-    select(.model) %>% 
-    pluck(1,1) %>% 
+  # model_parallel_tbl - uses the table of models
+  model_base <- model_parallel_tbl %>% filter(.model_id == model_best_id) %>%
+    select(.model) %>%
+    pluck(1,1) %>%
     chuck('fit') %>%
-    chuck('fit') %>% 
+    chuck('fit') %>%
     chuck('fit')
   return(model_base)
 }
@@ -111,25 +110,25 @@ get_base_model <- function(model_best_id, model_parallel_tbl){
 # 6. Get the predictions --------------------------------------------------
 
 get_model_predictions <- function(date_var, model_parallel_tbl, model_best_id, split_object, KPI){
-  model_predictions <- tibble("Date" = date_var, 
-                            "Predicted" = c(model_parallel_tbl %>% 
-                                              modeltime_residuals() %>% 
-                                              filter(.model_id == model_best_id) %>% 
+  model_predictions <- tibble("Date" = date_var,
+                            "Predicted" = c(model_parallel_tbl %>%
+                                              modeltime_residuals() %>%
+                                              filter(.model_id == model_best_id) %>%
                                               select(.prediction) %>% pull(),
-                                            model_parallel_tbl %>% 
-                                              modeltime_forecast(new_data = testing(split_object)) %>% 
-                                              filter(.model_id == model_best_id) %>% 
+                                            model_parallel_tbl %>%
+                                              modeltime_forecast(new_data = testing(split_object)) %>%
+                                              filter(.model_id == model_best_id) %>%
                                               select(.value) %>% pull()),
-                            "Real" = KPI %>% pull()) %>% 
-    mutate(Residuals = Real - Predicted) 
+                            "Real" = KPI %>% pull()) %>%
+    mutate(Residuals = Real - Predicted)
   return(model_predictions)
 }
 
 plot_model_predictions <- function(model_predictions){
-  ggplotly(ggplot(model_predictions%>% 
-                    pivot_longer(cols = c('Predicted', 'Real', 'Residuals'), 
+  ggplotly(ggplot(model_predictions%>%
+                    pivot_longer(cols = c('Predicted', 'Real', 'Residuals'),
                                  values_to = "Values",
-                                 names_to = "Item") %>% 
+                                 names_to = "Item") %>%
                     mutate(Date = unlist(Date),
                            Values = unlist(Values),
                            Item = unlist(Item))) +
@@ -138,9 +137,9 @@ plot_model_predictions <- function(model_predictions){
              scale_color_manual(values = c(Predicted = "#440154", Real = "#EF0707", Residuals = "#E2D249")) +
              labs(y = "Volume Sold", title = "Actual vs Predicted") +
              theme_classic() +
-             theme(plot.title = element_text(face = "bold", 
-                                             hjust = 0.5), 
-                   axis.title.y = element_text(size = 13L, face = "bold"), 
+             theme(plot.title = element_text(face = "bold",
+                                             hjust = 0.5),
+                   axis.title.y = element_text(size = 13L, face = "bold"),
                    axis.title.x = element_text(size = 13L, face = "bold")))
 }
 
@@ -149,33 +148,33 @@ plot_model_predictions <- function(model_predictions){
 
 get_model_metrics <- function(model_parallel_tbl, model_best_id, newdata){
   model_metrics <- model_parallel_tbl %>%
-    modeltime_accuracy(new_data = newdata) %>% 
+    modeltime_accuracy(new_data = newdata) %>%
     filter(.model_id == model_best_id)
 }
 
 get_error_metrics <- function(model_parallel_tbl, dataset, model_best_id){
-  model_error_metrics <- model_parallel_tbl %>% 
-    modeltime_residuals_test(dataset) %>% 
+  model_error_metrics <- model_parallel_tbl %>%
+    modeltime_residuals_test(dataset) %>%
     filter(.model_id == model_best_id)
 }
 
 # 8. Other specifications -------------------------------------------------
 
 get_model_configuration <- function(model_grid, model_best_id){
-  model_configuration <- model_grid[model_best_id,] 
+  model_configuration <- model_grid[model_best_id,]
 }
 
 
 # 9. Predict New Data -----------------------------------------------------
 
 get_new_predictions <- function(date_var, model_parallel_tbl, new_data, model_best_id, KPI){
-  new_predictions <- tibble("Date" = date_var, 
-         "Predicted" = model_parallel_tbl %>% 
-                           modeltime_forecast(new_data = new_data) %>% 
-                           filter(.model_id == model_best_id) %>% 
+  new_predictions <- tibble("Date" = date_var,
+         "Predicted" = model_parallel_tbl %>%
+                           modeltime_forecast(new_data = new_data) %>%
+                           filter(.model_id == model_best_id) %>%
                            select(.value) %>% pull(),
-         "Real" = KPI %>% pull()) %>% 
-    mutate(Residuals = Real - Predicted) 
+         "Real" = KPI %>% pull()) %>%
+    mutate(Residuals = Real - Predicted)
 }
 
 
