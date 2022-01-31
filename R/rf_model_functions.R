@@ -41,7 +41,7 @@ rf_model_table_set <- function(model_grid){
 
 get_rf_importances <- function(model_base){
   model_predictors <- model_base %>%
-    importance() %>%
+    randomForest::importance() %>%
     tibble(Name = rownames(.),
            Variable_Importance = as.numeric(.)) %>%
     select(2:3) %>%
