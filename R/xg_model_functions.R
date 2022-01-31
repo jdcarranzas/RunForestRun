@@ -8,7 +8,6 @@ require(xgboost)
 require(caret)
 library(lubridate)
 library(devtools)
-library(reprtree)
 library(plotly)
 library(openxlsx)
 library(writexl)
@@ -31,12 +30,12 @@ set_xg_model_grid <- function(n){
 
 xg_model_table_set <- function(model_grid){
   # This function uses the model grid created and specifies the model
-  
-  xg_model_tbl <- model_grid %>% 
+
+  xg_model_tbl <- model_grid %>%
     create_model_grid(
       f_model_spec = boost_tree,
       engine_name  = "xgboost",
-      mode         = "regression" 
+      mode         = "regression"
     )
   return(xg_model_tbl)
 }
@@ -44,7 +43,7 @@ xg_model_table_set <- function(model_grid){
 # Get the feature importances ------------------------------------------
 
 get_xg_importances <- function(model_base){
-  model_predictors <- model_base %>% 
+  model_predictors <- model_base %>%
     xgboost::xgb.importance(model = .,
                             feature_names = NULL)
   return(model_predictors)
@@ -59,9 +58,9 @@ plot_xg_importances <- function(model_predictors){
                      labs(x = "Variable", y = "Importance (Percentage of appearance)", title = "Variable Importance") +
                      coord_flip() +
                      hrbrthemes::theme_ipsum_ps() +
-                     theme(legend.position = "none", plot.title = element_text(face = "bold", 
+                     theme(legend.position = "none", plot.title = element_text(face = "bold",
                                                                                hjust = 0.5),
-                           axis.title.y = element_text(size = 13L, face = "bold"), 
+                           axis.title.y = element_text(size = 13L, face = "bold"),
                            axis.title.x = element_text(size = 13L, face = "bold", hjust = 1)))
 }
 

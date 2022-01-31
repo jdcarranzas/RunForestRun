@@ -8,7 +8,6 @@ require(xgboost)
 require(caret)
 library(lubridate)
 library(devtools)
-library(reprtree)
 library(plotly)
 library(openxlsx)
 library(writexl)
@@ -39,7 +38,7 @@ Tab2 <- tabPanel("Upload Dataset", fluid = T,
                                  selectInput('cat','Segment Variable', '', selected=''),
                                  p('To continue, please select a segment.'),
                                  htmlOutput("variableUI"),
-                                 hr(), 
+                                 hr(),
                                  h4("3. Select a new database for contrasting (optional)"),
                                  fileInput('file_new', 'Choose New File', accept = c('.xlsx')),
                                  width = size),
@@ -79,9 +78,9 @@ Tab3 <- tabPanel("Random Forest", fluid = T,
                                  selectInput(inputId = "drop",
                                              label = "Drop variables from the model:",
                                              "",
-                                             multiple = T),  
+                                             multiple = T),
                                  br(),
-                                 actionButton("update_drop_rf", "Drop Variables"), 
+                                 actionButton("update_drop_rf", "Drop Variables"),
                                  p('When you have selected all the variables you want to drop,
                                    press the button in order to re-run the model.'),
                                  width = size),
@@ -115,12 +114,12 @@ Tab3 <- tabPanel("Random Forest", fluid = T,
                                  dataTableOutput("rf_configuration"),
                                  fluidRow(
                                    column(
-                                     width = 5, 
+                                     width = 5,
                                      dataTableOutput("rf_new_m_metrics"),
                                      dataTableOutput("rf_new_e_metrics")
                                    ),
                                    column(
-                                     width = 7, 
+                                     width = 7,
                                      plotlyOutput("rf_predictions_new")
                                    )
                                  ),
@@ -148,11 +147,11 @@ Tab4 <- tabPanel("XGBoost", fluid = T,
                                  selectInput(inputId = "drop_xg",
                                              label = "Drop variables from the XG model:",
                                              "",
-                                             multiple = T),  
+                                             multiple = T),
                                  br(),
-                                 actionButton("update_drop_xg", "Drop XG Variables"), 
+                                 actionButton("update_drop_xg", "Drop XG Variables"),
                                  p('When you have selected all the variables you want to drop,
-                                   press the button in order to re-run the model.'), 
+                                   press the button in order to re-run the model.'),
                                  width = size),
                                mainPanel(
                                  br(),
@@ -184,12 +183,12 @@ Tab4 <- tabPanel("XGBoost", fluid = T,
                                  dataTableOutput("xg_configuration"),
                                  fluidRow(
                                    column(
-                                     width = 5, 
+                                     width = 5,
                                      dataTableOutput("xg_new_m_metrics"),
                                      dataTableOutput("xg_new_e_metrics")
                                    ),
                                    column(
-                                     width = 7, 
+                                     width = 7,
                                      plotlyOutput("xg_predictions_new")
                                    )
                                  ),
@@ -247,7 +246,7 @@ Tab2 <- tabPanel("Upload Dataset", fluid = T,
                                  selectInput('cat','Segment Variable', '', selected=''),
                                  p('To continue, please select a segment.'),
                                  htmlOutput("variableUI"),
-                                 hr(), 
+                                 hr(),
                                  h4("3. Select a new database for contrasting (optional)"),
                                  fileInput('file_new', 'Choose New File', accept = c('.xlsx')),
                                  width = size),
@@ -287,9 +286,9 @@ Tab3 <- tabPanel("Random Forest", fluid = T,
                                  selectInput(inputId = "drop",
                                              label = "Drop variables from the model:",
                                              "",
-                                             multiple = T),  
+                                             multiple = T),
                                  br(),
-                                 actionButton("update_drop_rf", "Drop Variables"), 
+                                 actionButton("update_drop_rf", "Drop Variables"),
                                  p('When you have selected all the variables you want to drop,
                                    press the button in order to re-run the model.'),
                                  width = size),
@@ -323,12 +322,12 @@ Tab3 <- tabPanel("Random Forest", fluid = T,
                                  dataTableOutput("rf_configuration"),
                                  fluidRow(
                                    column(
-                                     width = 5, 
+                                     width = 5,
                                      dataTableOutput("rf_new_m_metrics"),
                                      dataTableOutput("rf_new_e_metrics")
                                    ),
                                    column(
-                                     width = 7, 
+                                     width = 7,
                                      plotlyOutput("rf_predictions_new")
                                    )
                                  ),
@@ -356,11 +355,11 @@ Tab4 <- tabPanel("XGBoost", fluid = T,
                                  selectInput(inputId = "drop_xg",
                                              label = "Drop variables from the XG model:",
                                              "",
-                                             multiple = T),  
+                                             multiple = T),
                                  br(),
-                                 actionButton("update_drop_xg", "Drop XG Variables"), 
+                                 actionButton("update_drop_xg", "Drop XG Variables"),
                                  p('When you have selected all the variables you want to drop,
-                                   press the button in order to re-run the model.'), 
+                                   press the button in order to re-run the model.'),
                                  width = size),
                                mainPanel(
                                  br(),
@@ -392,12 +391,12 @@ Tab4 <- tabPanel("XGBoost", fluid = T,
                                  dataTableOutput("xg_configuration"),
                                  fluidRow(
                                    column(
-                                     width = 5, 
+                                     width = 5,
                                      dataTableOutput("xg_new_m_metrics"),
                                      dataTableOutput("xg_new_e_metrics")
                                    ),
                                    column(
-                                     width = 7, 
+                                     width = 7,
                                      plotlyOutput("xg_predictions_new")
                                    )
                                  ),

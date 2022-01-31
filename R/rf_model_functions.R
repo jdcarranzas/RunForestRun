@@ -8,7 +8,6 @@ require(xgboost)
 require(caret)
 library(lubridate)
 library(devtools)
-library(reprtree)
 library(plotly)
 library(openxlsx)
 library(writexl)
@@ -27,12 +26,12 @@ set_rf_model_grid <- function(n){
 
 rf_model_table_set <- function(model_grid){
   # This function uses the model grid created and specifies the model
-  
-  rf_model_tbl <- model_grid %>% 
+
+  rf_model_tbl <- model_grid %>%
     create_model_grid(
       f_model_spec = rand_forest,
       engine_name  = "randomForest",
-      mode         = "regression" 
+      mode         = "regression"
     )
   return(rf_model_tbl)
 }
@@ -40,12 +39,12 @@ rf_model_table_set <- function(model_grid){
 # Get the feature importances ------------------------------------------
 
 get_rf_importances <- function(model_base){
-  model_predictors <- model_base %>% 
-    importance() %>% 
+  model_predictors <- model_base %>%
+    importance() %>%
     tibble(Name = rownames(.),
-           Variable_Importance = as.numeric(.)) %>% 
-    select(2:3) %>% 
-    mutate(Variable_Importance = scales::rescale(Variable_Importance, to = c(0,1))) %>% 
+           Variable_Importance = as.numeric(.)) %>%
+    select(2:3) %>%
+    mutate(Variable_Importance = scales::rescale(Variable_Importance, to = c(0,1))) %>%
     arrange(desc(Variable_Importance))
   return(model_predictors)
 }
@@ -59,11 +58,11 @@ plot_rf_importances <- function(model_predictors){
                              labs(x = "Variable", y = "Importance (scaled from 0 to 1)", title = "Variable Importance") +
                              coord_flip() +
                              hrbrthemes::theme_ipsum_ps() +
-                             theme(legend.position = "none", plot.title = element_text(face = "bold", 
-                                                                                       hjust = 0.5), 
-                                   axis.title.y = element_text(size = 13L, face = "bold"), 
+                             theme(legend.position = "none", plot.title = element_text(face = "bold",
+                                                                                       hjust = 0.5),
+                                   axis.title.y = element_text(size = 13L, face = "bold"),
                                    axis.title.x = element_text(size = 13L, face = "bold", hjust = 1)))
-  
+
 }
 
 
