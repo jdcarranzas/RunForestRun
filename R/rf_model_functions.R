@@ -40,6 +40,7 @@ rf_model_table_set <- function(model_grid){
 # Get the feature importances ------------------------------------------
 
 get_rf_importances <- function(model_base){
+  require(randomForest)
   model_predictors <- model_base %>%
     randomForest::importance() %>%
     tibble(Name = rownames(.),
