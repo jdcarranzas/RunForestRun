@@ -11,6 +11,7 @@ library(devtools)
 library(plotly)
 library(openxlsx)
 library(writexl)
+require(randomForest)
 
 size = 2
 
@@ -215,6 +216,7 @@ require(xgboost)
 require(caret)
 library(lubridate)
 library(devtools)
+
 library(plotly)
 library(openxlsx)
 library(writexl)

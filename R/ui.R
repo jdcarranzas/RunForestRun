@@ -12,6 +12,7 @@ library(plotly)
 library(openxlsx)
 require(shinydashboard)
 require(shiny)
+require(randomForest)
 
 
 # Define UI for application that draws a histogram

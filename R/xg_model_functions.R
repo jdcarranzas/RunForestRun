@@ -12,6 +12,7 @@ library(plotly)
 library(openxlsx)
 library(writexl)
 require(shiny)
+require(randomForest)
 
 
 # 1. Set the model  -------------------------------------------------------

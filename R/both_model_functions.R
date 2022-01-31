@@ -11,6 +11,7 @@ library(devtools)
 library(plotly)
 library(openxlsx)
 library(writexl)
+require(randomForest)
 
 
 # 1. Create model functions -----------------------------------------------
