@@ -18,7 +18,6 @@ packages_for_install <- c("skimr",
                           "caret",
                           "lubridate",
                           "devtools",
-                          "reprtree",
                           "plotly",
                           "openxlsx",
                           "writexl")
