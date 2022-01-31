@@ -19,9 +19,7 @@ require(shiny)
 
 
 server <- function(input,output,session){
-  parallel_start(4, .method = "parallel")
-  options(scipen = 999,
-          digits = 2)
+
   # Upload Tab =====
 
   data_model <- reactive({
