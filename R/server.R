@@ -18,6 +18,8 @@ source("both_model_functions.R")
 source("rf_model_functions.R")
 source("xg_model_functions.R")
 
+setwd("R/")
+
 server <- function(input,output,session){
   parallel_start(4, .method = "parallel")
   options(scipen = 999,
