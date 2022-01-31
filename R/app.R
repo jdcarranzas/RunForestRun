@@ -44,6 +44,21 @@ require(shiny)
 
 
 executeApp <- function(){
+  library(skimr)
+  require(tidyverse)
+  require(modeltime)
+  require(tidymodels)
+  library(workflowsets)
+  require(timetk)
+  require(xgboost)
+  require(caret)
+  library(lubridate)
+  library(devtools)
+  library(plotly)
+  library(openxlsx)
+  library(writexl)
+  require(shiny)
+
   options(scipen = 999,
           digits = 2)
 
