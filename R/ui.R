@@ -17,7 +17,7 @@ require(randomForest)
 
 # Define UI for application that draws a histogram
 
-source('tabs.R')
+#source('tabs.R')
 
 ui <- shinyUI({
   fluidPage(titlePanel('Run Forest! Run'),
