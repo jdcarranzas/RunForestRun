@@ -69,7 +69,7 @@ executeApp <- function(){
   #source('server.R')
 
   # Run the application
-  shiny::shinyApp(ui = ui, server = server)
+  shiny::shinyApp(ui = user_interface, server = server)
 }
 
 
