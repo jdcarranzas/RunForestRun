@@ -121,8 +121,6 @@ server <- function(input,output,session){
       select(-one_of(c(missing_vars() %>% pull())))
   })
 
-  output$testing_data_frame <- renderDataTable({data_int_fin()})
-
   # Random Forest tab ====
 
   reactive({set.seed(input$seed)})

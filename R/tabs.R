@@ -56,9 +56,7 @@ Tab2 <- tabPanel("Upload Dataset", fluid = T,
                                  br(),
                                  h3('This variables will not appear in your model'),
                                  br(),
-                                 dataTableOutput('missing'),
-                                 h3('Test'),
-                                 dataTableOutput('testing_data_frame')
+                                 dataTableOutput('missing')
                                )))
 
 
