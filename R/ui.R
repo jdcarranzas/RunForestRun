@@ -15,7 +15,6 @@ require(shiny)
 require(randomForest)
 
 
-#source('tabs.R')
 
 user_interface <- shinyUI({
   fluidPage(titlePanel('Run Forest Run'),
