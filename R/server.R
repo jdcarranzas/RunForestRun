@@ -14,12 +14,13 @@ library(writexl)
 require(shiny)
 require(randomForest)
 
-#source("both_model_functions.R")
-#source("rf_model_functions.R")
-#source("xg_model_functions.R")
+source("both_model_functions.R")
+source("rf_model_functions.R")
+source("xg_model_functions.R")
 
 
 server <- function(input,output,session){
+  modeltime::parallel_start(8, .method = "parallel")
 
   # Upload Tab =====
 
@@ -57,7 +58,8 @@ server <- function(input,output,session){
   })
 
   data_int <- reactive({
-    data_model()[ data_model()[ , input$cat ] == input$variable, ] # Filters to the segment of interest
+    data_model() %>%
+      filter(get(input$cat)==input$variable) # Filters to the segment of interest
   })
 
   output$glimpse <- renderDataTable({
@@ -86,6 +88,41 @@ server <- function(input,output,session){
     glimpse(data_new())
   )
 
+  missing_vars <- reactive({
+    pivot_older <- data_int() %>%
+      select_if(function(col) inherits(col, 'Date') | is.numeric(col)) %>%
+      pivot_longer(cols = where(is.numeric), names_to = 'Variable', values_to = 'Values')
+
+    pivot_newer <- data_new() %>%
+      select_if(function(col) inherits(col, 'Date') | is.numeric(col)) %>%
+      pivot_longer(cols = where(is.numeric), names_to = 'Variable', values_to = 'Values')
+
+    missing_older <- pivot_older %>%
+      anti_join(pivot_newer, by = 'Variable') %>%
+      select(Variable)
+
+    missing_newer <- pivot_newer %>%
+      anti_join(pivot_older, by = 'Variable') %>%
+      select(Variable)
+
+    missing_vars <- missing_older %>%
+      bind_rows(missing_newer) %>%
+      unique()
+
+    rm(pivot_older, pivot_newer, missing_older, missing_newer)
+
+    return(missing_vars)
+  })
+
+  output$missing <- renderDataTable({missing_vars()})
+
+  data_int_fin <- reactive({
+    data_int() %>%
+      select(-one_of(c(missing_vars() %>% pull())))
+  })
+
+  output$testing_data_frame <- renderDataTable({data_int_fin()})
+
   # Random Forest tab ====
 
   reactive({set.seed(input$seed)})
@@ -99,7 +136,8 @@ server <- function(input,output,session){
 
   # Create dataset split
   split_dataset <- reactive({
-    split(data_int() %>% select(-c(rf_drop_variables())),
+    split(data_int_fin() %>%
+            select(-c(rf_drop_variables())),
           input$train_threshold)
   })
 
@@ -119,7 +157,8 @@ server <- function(input,output,session){
 
   # Train the model
   rf_model_parallel_tbl <- reactive({
-    set_model_parallel_tbl(dataset = data_int() %>% select(-c(rf_drop_variables())),
+    set_model_parallel_tbl(dataset = data_int_fin() %>%
+                             select(-c(rf_drop_variables())),
                            model_wfset = rf_model_wfset(),
                            split_object = split_dataset())
   })
@@ -142,11 +181,11 @@ server <- function(input,output,session){
 
   # Get the predictions dataset
   rf_model_predictions <- reactive({
-    get_model_predictions(date_var = select_if(data_int(), is.Date),
+    get_model_predictions(date_var = select_if(data_int_fin(), is.Date),
                           model_parallel_tbl = rf_model_parallel_tbl(),
                           model_best_id = rf_model_best(),
                           split_object = split_dataset(),
-                          KPI = select(data_int(), input$KPI))
+                          KPI = select(data_int_fin(), input$KPI))
   })
 
   # Get the predictions plot
@@ -166,7 +205,9 @@ server <- function(input,output,session){
 
   # Get the errors metrics
   rf_error_metrics <- reactive({
-    get_error_metrics(rf_model_parallel_tbl(), data_int(), rf_model_best())
+    get_error_metrics(rf_model_parallel_tbl(),
+                      data_int_fin(),
+                      rf_model_best())
   })
 
   # Render error metrics
@@ -197,7 +238,9 @@ server <- function(input,output,session){
 
   # Metrics for new data
   output$rf_new_e_metrics <- renderDataTable(
-    get_error_metrics(rf_model_parallel_tbl(), data_new(), rf_model_best()) %>%
+    get_error_metrics(rf_model_parallel_tbl(),
+                      data_new(),
+                      rf_model_best()) %>%
       select(-c(.model_id, .model_desc)) %>%
       mutate(across(everything(), function(x) round(x,2)))
   )
@@ -241,7 +284,8 @@ server <- function(input,output,session){
 
   # Create dataset split
   xg_split_dataset <- reactive({
-    split(data_int() %>% select(-c(xg_drop_variables())),
+    split(data_int_fin()%>%
+            select(-c(xg_drop_variables())),
           input$train_threshold_xg)
   })
 
@@ -260,7 +304,8 @@ server <- function(input,output,session){
 
   # Train the model
   xg_model_parallel_tbl <- reactive({
-    set_model_parallel_tbl(dataset = data_int() %>% select(-c(xg_drop_variables())),
+    set_model_parallel_tbl(dataset = data_int_fin()%>%
+                             select(-c(xg_drop_variables())),
                            model_wfset = xg_model_wfset(),
                            split_object = xg_split_dataset())
   })
@@ -283,11 +328,11 @@ server <- function(input,output,session){
 
   # Get the predictions dataset
   xg_model_predictions <- reactive({
-    get_model_predictions(date_var = select_if(data_int(), is.Date),
+    get_model_predictions(date_var = select_if(data_int_fin(), is.Date),
                           model_parallel_tbl = xg_model_parallel_tbl(),
                           model_best_id = xg_model_best(),
                           split_object = xg_split_dataset(),
-                          KPI = select(data_int(), input$KPI_xg))
+                          KPI = select(data_int_fin(), input$KPI_xg))
   })
 
   # Get the predictions plot
@@ -309,7 +354,9 @@ server <- function(input,output,session){
 
   # Get the errors metrics
   xg_error_metrics <- reactive({
-    get_error_metrics(xg_model_parallel_tbl(), data_int(), xg_model_best()) %>%
+    get_error_metrics(xg_model_parallel_tbl(),
+                      data_int_fin(),
+                      xg_model_best()) %>%
       select(-c(.model_id, .model_desc)) %>%
       mutate(across(everything(), function(x) round(x,2)))
   })
@@ -341,7 +388,9 @@ server <- function(input,output,session){
 
   # Metrics for new data
   output$xg_new_e_metrics <- renderDataTable(
-    get_error_metrics(xg_model_parallel_tbl(), data_new(), xg_model_best()) %>%
+    get_error_metrics(xg_model_parallel_tbl(),
+                      data_new(),
+                      xg_model_best()) %>%
       select(-c(.model_id, .model_desc)) %>%
       mutate(across(everything(), function(x) round(x,2)))
   )
