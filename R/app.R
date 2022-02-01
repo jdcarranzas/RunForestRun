@@ -65,8 +65,6 @@ executeApp <- function(){
 
   modeltime::parallel_start(8, .method = "parallel")
 
-
-
   # Run the application
   shiny::shinyApp(ui = user_interface, server = server)
 }
