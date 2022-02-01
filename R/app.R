@@ -65,7 +65,7 @@ executeApp <- function(){
 
   modeltime::parallel_start(8, .method = "parallel")
 
-  #source('ui.R', local = TRUE)
+  source('ui.R', local = TRUE)
   #source('server.R')
 
   # Run the application
