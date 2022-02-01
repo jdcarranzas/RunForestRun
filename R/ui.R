@@ -15,8 +15,6 @@ require(shiny)
 require(randomForest)
 
 
-# Define UI for application that draws a histogram
-
 #source('tabs.R')
 
 ui <- shinyUI({
