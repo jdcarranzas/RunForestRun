@@ -14,10 +14,17 @@ library(writexl)
 require(shiny)
 require(randomForest)
 
+#source("R/both_model_functions.R")
+#source("R/xg_model_functions.R")
+#source("R/rf_model_functions.R")
 
 
 server <- function(input,output,session){
   modeltime::parallel_start(8, .method = "parallel")
+
+  url <- a('The GitHub Repository', href = "https://github.com/jdcarranzas/RunForestRun")
+
+  output$github <- renderUI({tagList("Want to check what's going on in the backseat? Visit:", url)})
 
   # Upload Tab =====
 
@@ -185,7 +192,7 @@ server <- function(input,output,session){
 
   # Get the predictions plot
   output$rf_predictions <- renderPlotly({
-    plot_model_predictions(rf_model_predictions())  # Renders the datatable
+    plot_model_predictions(rf_model_predictions(), data_int_fin() %>% select_if(is.Date) %>% slice_tail(n=1) %>% pull())  # Renders the datatable
   })
 
   # Get the model metrics
@@ -228,24 +235,33 @@ server <- function(input,output,session){
 
   # Plot for new data
   output$rf_predictions_new <- renderPlotly({
-    plot_model_predictions(rf_model_predictions_new())  # Renders the datatable
+    plot_model_predictions(rf_model_predictions_new(), data_int_fin() %>% select_if(is.Date) %>% slice_tail(n=1) %>% pull())  # Renders the datatable
   })
 
   # Metrics for new data
-  output$rf_new_e_metrics <- renderDataTable(
+  rf_new_e_metrics_tbl <- reactive({
     get_error_metrics(rf_model_parallel_tbl(),
                       data_new(),
                       rf_model_best()) %>%
       select(-c(.model_id, .model_desc)) %>%
       mutate(across(everything(), function(x) round(x,2)))
+  })
+
+
+  output$rf_new_e_metrics <- renderDataTable(
+    rf_new_e_metrics_tbl()
   )
 
-  output$rf_new_m_metrics <- renderDataTable(
+  rf_new_m_metrics_tbl <- reactive({
     get_model_metrics(rf_model_parallel_tbl(),
                       rf_model_best(),
                       newdata = data_new()) %>%
       select(-c(.model_id, .model_desc, .type)) %>%
       mutate(across(everything(), function(x) round(x,2)))
+  })
+
+  output$rf_new_m_metrics <- renderDataTable(
+    rf_new_m_metrics_tbl()
   )
 
   # Download model results
@@ -254,10 +270,10 @@ server <- function(input,output,session){
       'model_rf_results.xlsx'
     },
     content = function(file){
-      list_data <- list('Model_Results' = rf_model_predictions() %>% tibble(),
+      list_data <- list('Model_Results' = rf_model_predictions_new() %>% tibble(),
                         'Variable_Importances' = get_rf_importances(rf_model_base()) %>% tibble(),
-                        'Model_Metrics' = rf_model_metrics() %>% tibble(),
-                        'Error_Metrics' = rf_error_metrics() %>% tibble(),
+                        'Model_Metrics' = rf_new_m_metrics_tbl() %>% tibble(),
+                        'Error_Metrics' = rf_new_e_metrics_tbl() %>% tibble(),
                         'Model_Config' = get_model_configuration(set_rf_model_grid(input$n_models_rf), rf_model_best()) %>% tibble()
       )
       write_xlsx(list_data, file)
@@ -332,7 +348,7 @@ server <- function(input,output,session){
 
   # Get the predictions plot
   output$xg_predictions <- renderPlotly({
-    plot_model_predictions(xg_model_predictions())  # Renders the datatable
+    plot_model_predictions(xg_model_predictions(), data_int_fin() %>% select_if(is.Date) %>% slice_tail(n=1) %>% pull())  # Renders the datatable
   })
 
   # Get the model metrics
@@ -378,24 +394,34 @@ server <- function(input,output,session){
 
   # Plot for new data
   output$xg_predictions_new <- renderPlotly({
-    plot_model_predictions(xg_model_predictions_new())  # Renders the datatable
+    plot_model_predictions(xg_model_predictions_new(), data_int_fin() %>% select_if(is.Date) %>% slice_tail(n=1) %>% pull())  # Renders the datatable
   })
 
   # Metrics for new data
-  output$xg_new_e_metrics <- renderDataTable(
+
+  xg_new_e_metrics_tbl <- reactive({
     get_error_metrics(xg_model_parallel_tbl(),
                       data_new(),
                       xg_model_best()) %>%
       select(-c(.model_id, .model_desc)) %>%
       mutate(across(everything(), function(x) round(x,2)))
-  )
+  })
 
-  output$xg_new_m_metrics <- renderDataTable(
+  output$xg_new_e_metrics <- renderDataTable({
+    xg_new_e_metrics_tbl()
+  })
+
+  xg_new_m_metrics_tbl <- reactive({
     get_model_metrics(xg_model_parallel_tbl(),
                       xg_model_best(),
                       newdata = data_new()) %>%
       select(-c(.model_id, .model_desc, .type)) %>%
       mutate(across(everything(), function(x) round(x,2)))
+  })
+
+
+  output$xg_new_m_metrics <- renderDataTable(
+    xg_new_m_metrics_tbl()
   )
 
   # Download model results
@@ -404,10 +430,10 @@ server <- function(input,output,session){
       'model_xg_results.xlsx'
     },
     content = function(file){
-      list_data <- list('Model_Results' = xg_model_predictions() %>% tibble(),
+      list_data <- list('Model_Results' = xg_model_predictions_new() %>% tibble(),
                         'Variable_Importances' = get_xg_importances(xg_model_base()) %>% tibble(),
-                        'Model_Metrics' = xg_model_metrics() %>% tibble(),
-                        'Error_Metrics' = xg_error_metrics() %>% tibble(),
+                        'Model_Metrics' = xg_new_m_metrics_tbl() %>% tibble(),
+                        'Error_Metrics' = xg_new_e_metrics_tbl() %>% tibble(),
                         'Model_Config' = get_model_configuration(set_xg_model_grid(input$n_models_xg), xg_model_best()) %>% tibble()
       )
       write_xlsx(list_data, file)

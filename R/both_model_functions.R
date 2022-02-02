@@ -124,7 +124,7 @@ get_model_predictions <- function(date_var, model_parallel_tbl, model_best_id, s
   return(model_predictions)
 }
 
-plot_model_predictions <- function(model_predictions){
+plot_model_predictions <- function(model_predictions, test_line){
   ggplotly(ggplot(model_predictions%>%
                     pivot_longer(cols = c('Predicted', 'Real', 'Residuals'),
                                  values_to = "Values",
@@ -134,6 +134,10 @@ plot_model_predictions <- function(model_predictions){
                            Item = unlist(Item))) +
              aes(x = Date, y = Values, colour = Item, group = Item) +
              geom_line(size = 1.05) +
+             geom_vline(xintercept = test_line,
+                        linetype = "dashed",
+                        color = "blue",
+                        size = 0.5)+
              scale_color_manual(values = c(Predicted = "#440154", Real = "#EF0707", Residuals = "#E2D249")) +
              labs(y = "Volume Sold", title = "Actual vs Predicted") +
              theme_classic() +
