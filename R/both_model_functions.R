@@ -12,6 +12,7 @@ library(plotly)
 library(openxlsx)
 library(writexl)
 require(randomForest)
+require(dendextend)
 
 
 # 1. Create model functions -----------------------------------------------

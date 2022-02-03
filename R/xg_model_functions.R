@@ -13,6 +13,7 @@ library(openxlsx)
 library(writexl)
 require(shiny)
 require(randomForest)
+require(dendextend)
 
 
 # 1. Set the model  -------------------------------------------------------

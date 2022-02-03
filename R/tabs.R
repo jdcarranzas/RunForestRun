@@ -13,6 +13,7 @@ library(openxlsx)
 library(writexl)
 require(randomForest)
 require(shiny)
+require(dendextend)
 
 size = 2
 
@@ -191,7 +192,8 @@ Tab3 <- tabPanel("XGBoost", fluid = T,
                                    <li style = "font-size:18px"; >Min_n is the minimum number of observations taken for each model.</li>
                                    <li style = "font-size:18px"; >Tree Depth is the max number of descending nodes for each model.</li>
                                    <li style = "font-size:18px"; >Sample Size is the percentage of observations exposed for each model.</li>
-                                   <li style = "font-size:18px"; >Note: The number of features taken for each model is equal to the square root of total features.</li>
+                                   <li style = "font-size:18px"; >Note: The number of features
+                                   taken for each model is equal to the square root of total features.</li>
                                    </ul>'),
                                  br(),
                                  dataTableOutput("xg_configuration"),
@@ -359,7 +361,86 @@ Tab4 <- tabPanel("Random Forest", fluid = T,
                                  downloadButton("download_rf_results", "Download Results")
                                )))
 
-Tab5 <- tabPanel("HoliUWU")
+Tab5 <- tabPanel("Hierarchy Trees", fluid = T,
+                 sidebarLayout(position = "left",
+                               sidebarPanel(
+                                 br(),
+                                 selectInput(inputId = "drop_ht",
+                                             label = "Drop variables for comparison:",
+                                             "",
+                                             multiple = T),
+                                 p("Drop the variables you don't want to see in the comparison tree.
+                                   You can drop as much as you want, the result is immediate."),
+                                 width = size),
+                               mainPanel(
+                                 h3('Hierarchical Clustering'),
+                                 br(),
+                                 p('The idea behind this particular model, is the usage of some distance metric
+                                   for capturing the simmilarity between data points. ',
+                                   style="font-size:18px"),
+                                 br(),
+                                 p('how to use',
+                                   style="font-size:18px"),
+                                 br(),
+                                 h3('Select the parameters for your cluster'),
+                                 br(),
+                                 p('Some explanation, maybe splitted',
+                                   style="font-size:18px"),
+                                 br(),
+                                 splitLayout(
+                                   selectInput(inputId = "distances_1",
+                                               label = "Select the method for calculating distances.",
+                                               choices = c(
+                                                 "Euclidean" = "euclidean",
+                                                 "Maximum"   = "maximum",
+                                                 "Manhattan" = "manhattan",
+                                                 "Canberra"  = "canberra",
+                                                 "Binary"    = "binary",
+                                                 "Minkowski" = "minkowsky"),
+                                               selected = "euclidean"),
+                                   selectInput(inputId = "cluster_1",
+                                               label = "Select the method for clustering.",
+                                               choices = c(
+                                                 "Ward"      = "ward.D",
+                                                 "Single"    = "single",
+                                                 "Complete"  = "complete",
+                                                 "Average"   = "average",
+                                                 "McQuitty"  = "mcquitty",
+                                                 "Median"    = "median",
+                                                 "Centroids" = "centroid"),
+                                               selected = "average")),
+                                 br(),
+                                 plotOutput('single_dendo', height = "900px"),
+                                 br(),
+                                 h3('Want to compare to another clustering type?'),
+                                 p('why is a good idea to compare',
+                                   style="font-size:18px"),
+                                 br(),
+                                 splitLayout(
+                                   selectInput(inputId = "distances_2",
+                                               label = "Select the method for calculating distances.",
+                                               choices = c(
+                                                 "Euclidean" = "euclidean",
+                                                 "Maximum"   = "maximum",
+                                                 "Manhattan" = "manhattan",
+                                                 "Canberra"  = "canberra",
+                                                 "Binary"    = "binary",
+                                                 "Minkowski" = "minkowsky"),
+                                               selected = "euclidean"),
+                                   selectInput(inputId = "cluster_2",
+                                               label = "Select the method for clustering.",
+                                               choices = c(
+                                                 "Ward"      = "ward.D",
+                                                 "Single"    = "single",
+                                                 "Complete"  = "complete",
+                                                 "Average"   = "average",
+                                                 "McQuitty"  = "mcquitty",
+                                                 "Median"    = "median",
+                                                 "Centroids" = "centroid"),
+                                               selected = "complete")),
+                                 br(),
+                                 plotOutput("tanglegram", height = "900px")
+                               )))
 
 
 

@@ -13,11 +13,12 @@ library(openxlsx)
 library(writexl)
 require(shiny)
 require(randomForest)
+require(dendextend)
 
 #source("R/both_model_functions.R")
 #source("R/xg_model_functions.R")
 #source("R/rf_model_functions.R")
-
+#source("R/ht_model_functions.R")
 
 server <- function(input,output,session){
   modeltime::parallel_start(8, .method = "parallel")
@@ -83,6 +84,9 @@ server <- function(input,output,session){
 
     data_actual <- read.xlsx(inFile$datapath, detectDates = T) %>%
       filter(get(input$cat) == input$variable)# Assigned to a variable
+
+    updateSelectInput(session, inputId = 'drop_ht', label = 'Drop variables for comparison:',
+                      choices = names(select_if(data_actual, is.numeric)))
 
     return(data_actual)
 
@@ -438,4 +442,35 @@ server <- function(input,output,session){
       )
       write_xlsx(list_data, file)
     })
+
+
+  # Hierarchy Trees tab -----------------------------------------------------
+
+  # Reactive environment
+
+  # Drop variables if wanted -
+  data_ht <- reactive({
+    data_new() %>% select(-input$drop_ht)
+  })
+
+  # Preprocess the data
+  dendro_1 <- reactive({
+    preprocess_hc(data_ht(), input$distances_1, input$cluster_1)
+  })
+
+  # Plot the single Dendogram
+  output$single_dendo <- renderPlot({
+    plot_dendogram(dendro_1())
+  })
+
+  # Prepare the second dendogram
+  dendro_2 <- reactive({
+    preprocess_hc(data_ht(), input$distances_2, input$cluster_2)
+  })
+
+  # Plot the Tanglegram
+  output$tanglegram <- renderPlot({
+    plot_tanglegram(dendro_1(), dendro_2(), input$distances_1, input$cluster_1, input$distances_2, input$cluster_2)
+  })
+
 }

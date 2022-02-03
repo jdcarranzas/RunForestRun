@@ -20,7 +20,8 @@ packages_for_install <- c("skimr",
                           "devtools",
                           "plotly",
                           "openxlsx",
-                          "writexl")
+                          "writexl",
+                          "dendextend")
 
 install.packages(setdiff(packages_for_install,
                          rownames(installed.packages())),
@@ -61,6 +62,7 @@ executeApp <- function(){
   library(writexl)
   require(shiny)
   require(randomForest)
+  require(dendextend)
 
   options(scipen = 999,
           digits = 2)
