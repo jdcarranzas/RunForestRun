@@ -376,16 +376,52 @@ Tab5 <- tabPanel("Hierarchy Trees", fluid = T,
                                  h3('Hierarchical Clustering'),
                                  br(),
                                  p('The idea behind this particular model, is the usage of some distance metric
-                                   for capturing the simmilarity between data points. ',
+                                   for capturing the simmilarity between data points, in this case, the similarity
+                                   between variables. In this case, the technique is agglomerative, so each variable
+                                   is a cluster and the minor distance is represented by how close the clusters are
+                                   in the brances.',
                                    style="font-size:18px"),
                                  br(),
-                                 p('how to use',
+                                 p("This app encourages you to use the methodology in order to detect in a visual
+                                   way the relations between variables (not only linear) and capture if some variables
+                                   are more or less related to each other. You can choose in the left panel the variables
+                                   you don't want to compare in the clustering; also you can choose the distance metric
+                                   used and the method for clusterization",
                                    style="font-size:18px"),
                                  br(),
                                  h3('Select the parameters for your cluster'),
                                  br(),
-                                 p('Some explanation, maybe splitted',
-                                   style="font-size:18px"),
+                                 splitLayout(
+                                   HTML(
+                                   '<ul>
+                                   <li style = "font-size:18px"; >Euclidean distance is the ordinary distance between
+                                                                  two points in the plane, taking the sum of the difference
+                                                                  between the components.</li>
+                                   <li style = "font-size:18px"; >Maximum is the maximum distance beetween the components
+                                                                  of the points compared (supremum norm).</li>
+                                   <li style = "font-size:18px"; >Manhattan is the Absolute distance between the two vectors.</li>
+                                   <li style = "font-size:18px"; >Canberra is the absolute euclidian distance divided into the
+                                                                  sum of the components.</li>
+                                   <li style = "font-size:18px"; >Minkowski distance is the generalisation of the euclidean
+                                                                  and manhattan distance. It takes the absolute difference
+                                                                  between components to the p exponent depending on iterations.</li>
+                                   </ul>'),
+                                   HTML(
+                                     '<ul>
+                                   <li style = "font-size:18px"; >Euclidean distance is the ordinary distance between
+                                                                  two points in the plane, taking the sum of the difference
+                                                                  between the components.</li>
+                                   <li style = "font-size:18px"; >Maximum is the maximum distance beetween the components
+                                                                  of the points compared (supremum norm).</li>
+                                   <li style = "font-size:18px"; >Manhattan is the Absolute distance between the two vectors.</li>
+                                   <li style = "font-size:18px"; >Canberra is the absolute euclidian distance divided into the
+                                                                  sum of the components.</li>
+                                   <li style = "font-size:18px"; >Minkowski distance is the generalisation of the euclidean
+                                                                  and manhattan distance. It takes the absolute difference
+                                                                  between components to the p exponent depending on iterations.</li>
+                                   </ul>')
+                                 ),
+
                                  br(),
                                  splitLayout(
                                    selectInput(inputId = "distances_1",
@@ -395,7 +431,6 @@ Tab5 <- tabPanel("Hierarchy Trees", fluid = T,
                                                  "Maximum"   = "maximum",
                                                  "Manhattan" = "manhattan",
                                                  "Canberra"  = "canberra",
-                                                 "Binary"    = "binary",
                                                  "Minkowski" = "minkowsky"),
                                                selected = "euclidean"),
                                    selectInput(inputId = "cluster_1",
