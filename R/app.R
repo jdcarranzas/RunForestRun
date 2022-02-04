@@ -46,7 +46,7 @@ require(shiny)
 #source("R/server.R")
 #source("R/user_interface.R")
 
-executeApp <- function(){
+executeApp <- function(cores = 8){
   library(skimr)
   require(tidyverse)
   require(modeltime)
@@ -67,7 +67,7 @@ executeApp <- function(){
   options(scipen = 999,
           digits = 2)
 
-  modeltime::parallel_start(8, .method = "parallel")
+  modeltime::parallel_start(cores, .method = "parallel")
 
   # Run the application
   shiny::shinyApp(ui = user_interface, server = server)
