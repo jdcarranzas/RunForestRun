@@ -391,37 +391,39 @@ Tab5 <- tabPanel("Hierarchy Trees", fluid = T,
                                  br(),
                                  h3('Select the parameters for your cluster'),
                                  br(),
-                                 splitLayout(
-                                   HTML(
+                                 h4('Distances'),
+                                 br(),
+                                 HTML(
                                    '<ul>
-                                   <li style = "font-size:18px"; >Euclidean distance is the ordinary distance between
+                                   <li style = "font-size:15px"; >Euclidean distance is the ordinary distance between
                                                                   two points in the plane, taking the sum of the difference
                                                                   between the components.</li>
-                                   <li style = "font-size:18px"; >Maximum is the maximum distance beetween the components
+                                   <li style = "font-size:15px"; >Maximum is the maximum distance beetween the components
                                                                   of the points compared (supremum norm).</li>
-                                   <li style = "font-size:18px"; >Manhattan is the Absolute distance between the two vectors.</li>
-                                   <li style = "font-size:18px"; >Canberra is the absolute euclidian distance divided into the
+                                   <li style = "font-size:15px"; >Manhattan is the Absolute distance between the two vectors.</li>
+                                   <li style = "font-size:15px"; >Canberra is the absolute euclidian distance divided into the
                                                                   sum of the components.</li>
-                                   <li style = "font-size:18px"; >Minkowski distance is the generalisation of the euclidean
+                                   <li style = "font-size:15px"; >Minkowski distance is the generalisation of the euclidean
                                                                   and manhattan distance. It takes the absolute difference
                                                                   between components to the p exponent depending on iterations.</li>
                                    </ul>'),
-                                   HTML(
-                                     '<ul>
-                                   <li style = "font-size:18px"; >Euclidean distance is the ordinary distance between
-                                                                  two points in the plane, taking the sum of the difference
-                                                                  between the components.</li>
-                                   <li style = "font-size:18px"; >Maximum is the maximum distance beetween the components
-                                                                  of the points compared (supremum norm).</li>
-                                   <li style = "font-size:18px"; >Manhattan is the Absolute distance between the two vectors.</li>
-                                   <li style = "font-size:18px"; >Canberra is the absolute euclidian distance divided into the
-                                                                  sum of the components.</li>
-                                   <li style = "font-size:18px"; >Minkowski distance is the generalisation of the euclidean
-                                                                  and manhattan distance. It takes the absolute difference
-                                                                  between components to the p exponent depending on iterations.</li>
-                                   </ul>')
-                                 ),
-
+                                 br(),
+                                 h4('Clustering'),
+                                 br(),
+                                 HTML(
+                                   '<ul>
+                                   <li style = "font-size:15px"; >Ward uses the minimum variance method, in order to create links
+                                                                  that minimizes the intra-cluster variance.</li>
+                                   <li style = "font-size:15px"; >Single computes all pairwise dissimilarities and considers the smallest
+                                                                  one as a linkage criterion.</li>
+                                   <li style = "font-size:15px"; >Complete compares element to element to identify the maximum distance beetween
+                                                                  components and identify the minimum of these to create linkages.</li>
+                                   <li style = "font-size:15px"; >Average uses the mean of the pairwise dissimilarities between components
+                                                                  to create linkages, Median does the same operation.</li>
+                                   <li style = "font-size:15px"; >Centroids uses the average of a vector X to compare to the average of another
+                                                                  vector Y (of the same length) and creates linkages based on the minimum difference
+                                                                  of both.</li>
+                                   </ul>'),
                                  br(),
                                  splitLayout(
                                    selectInput(inputId = "distances_1",
@@ -440,15 +442,19 @@ Tab5 <- tabPanel("Hierarchy Trees", fluid = T,
                                                  "Single"    = "single",
                                                  "Complete"  = "complete",
                                                  "Average"   = "average",
-                                                 "McQuitty"  = "mcquitty",
                                                  "Median"    = "median",
                                                  "Centroids" = "centroid"),
                                                selected = "average")),
                                  br(),
+                                 tags$head(tags$style(HTML(".shiny-split-layout > div {overflow: visible;}"))),
                                  plotOutput('single_dendo', height = "900px"),
                                  br(),
                                  h3('Want to compare to another clustering type?'),
-                                 p('why is a good idea to compare',
+                                 p('Sometimes you need to have a pair revision. In this case, you can compare
+                                   your first hierarchical cluster with another one and check if the variables
+                                   belong to the same end nodes. These can be compared with the inner links that
+                                   match the variables. The usage is the same, select the distance and the cluster
+                                   type',
                                    style="font-size:18px"),
                                  br(),
                                  splitLayout(
