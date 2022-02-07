@@ -10,6 +10,7 @@ packages_for_install <- c("skimr",
                           "lubridate",
                           "devtools",
                           "plotly",
+                          "shiny",
                           "openxlsx",
                           "writexl",
                           "dendextend")
