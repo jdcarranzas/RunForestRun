@@ -47,6 +47,25 @@ require(shiny)
 #source("R/user_interface.R")
 
 executeApp <- function(cores = 8){
+  packages_for_install <- c("skimr",
+                            "tidyverse",
+                            "modeltime",
+                            "tidymodels",
+                            "workflowsets",
+                            "timetk",
+                            "xgboost",
+                            "randomForest",
+                            "caret",
+                            "lubridate",
+                            "devtools",
+                            "plotly",
+                            "openxlsx",
+                            "writexl",
+                            "dendextend")
+
+  install.packages(setdiff(packages_for_install,
+                           rownames(installed.packages())),
+                   repos = "http://cran.us.r-project.org")
   library(skimr)
   require(tidyverse)
   require(modeltime)
